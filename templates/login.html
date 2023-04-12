@@ -1,17 +1,34 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <title>Login Page</title>
+  <link rel="stylesheet" href="../static/auth.css">
+  <title>Auth</title>
 </head>
 <body>
-<h1>Login</h1>
-<form action="/login" method="post">
-    <label for="username">Username:</label>
-    <input type="text" id="username" name="username">
-    <br>
-    <label for="password">Password:</label>
-    <input type="password" id="password" name="password">
-    <br>
-    <input type="submit" value="Submit">
-</form>
+    <section>
+        <div class="form-box">
+            <div class="form-value">
+                <form action="/login" method="post">
+                    <h2>Login</h2>
+                    <div class="inputbox">
+                        <ion-icon name="person-circle-outline"></ion-icon>
+                        <input name="username" required autofocus>
+                        <label for="">User</label>
+                    </div>
+                    <div class="inputbox">
+                        <ion-icon name="lock-closed-outline"></ion-icon>
+                        <input name="password"  type="password" required>
+                        <label for="">Password</label>
+                    </div>
+                    <button name="login">Log in</button>
+                    <div class="register">
+                        <p>Don't have a account <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ">Register</a></p>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
 </body>
 </html>

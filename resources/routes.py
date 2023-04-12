@@ -16,19 +16,27 @@ from database.db import db
 
 import re
 
+def get_identity_if_logedin():
+    try:
+        verify_jwt_in_request()
+        return get_jwt_identity()
+    except Exception:
+        pass
+    return None
+
 
 def login():
     # get username and password from request (form)
     username = flask.request.form.get('username', None)
     password = flask.request.form.get('password', None)
     if not username:
-        return flask.jsonify({"msg": "Missing username parameter"}), 400
+        return flask.render_template('info.html',data="Missing username parameter"), 400
     if not password:
-        return flask.jsonify({"msg": "Missing password parameter"}), 400
+        return flask.render_template('info.html', data="Missing password parameter"), 400
 
     user = User.query.filter_by(username=username).first()
     if user is None or user.password != password:
-        return flask.jsonify({"msg": "Bad username or password"}), 401
+        return flask.render_template('info.html', data="Bad username or password"), 401
 
     # blocklist all tokens from a user when he logs in
     token = user.access_token
@@ -52,11 +60,19 @@ def login():
     resp = flask.jsonify({'login': True})
     set_access_cookies(resp, access_token)
 
-    return resp, 200
+    # redirect to home page
+    resp.headers['Location'] = '/'
+    resp.status_code = 302
+    return resp
+
 
 
 def login_form():
-    return flask.render_template('login.html')
+    identity = get_identity_if_logedin()
+    if not identity:
+        return flask.render_template('login.html')
+    user = User.query.filter_by(username=identity).first()
+    return flask.render_template('login_as.html', user=user.username)
 
 # @jwt_required(refresh=True)
 # def refresh():
@@ -102,7 +118,7 @@ def modify_token():
     db.session.add(TokenBlocklist(jti=jti, type=ttype, created_at=now))
     db.session.commit()
 
-    return flask.jsonify(msg=f"{ttype.capitalize()} token successfully revoked"), 200
+    return flask.render_template('info.html', data=f"{ttype.capitalize()} token successfully revoked"), 200
 
 
 @jwt_required()
@@ -175,30 +191,22 @@ def get_users():
     return flask.jsonify([user.serialize() for user in users]), 200
 
 
-def get_identity_if_logedin():
-    try:
-        verify_jwt_in_request()
-        return get_jwt_identity()
-    except Exception:
-        pass
-    return None
 
-
-def index():
-    identity = get_identity_if_logedin()
-    if not identity:
-        return flask.render_template('index.html', user="None")
-    user = User.query.filter_by(username=identity).first()
-    return flask.render_template('index.html', user=user.username)
+# def index():
+#     identity = get_identity_if_logedin()
+#     if not identity:
+#         return flask.render_template('info.html', user="None")
+#     user = User.query.filter_by(username=identity).first()
+#     return flask.render_template('info.html', user=user.username)
 
 
 def init_routes(app):
     app.add_url_rule('/login', 'login', login, methods=['POST'])
-    app.add_url_rule('/login', 'login_form', login_form, methods=['GET'])
+    app.add_url_rule('/', 'login_form', login_form, methods=['GET'])
     # app.add_url_rule('/refresh', 'refresh', refresh, methods=['POST'])
     app.add_url_rule('/who_i_am', 'who_i_am', who_i_am, methods=['GET'])
     app.add_url_rule('/logout', 'logout', modify_token, methods=['DELETE'])
+    app.add_url_rule('/logout', 'logout', modify_token, methods=['GET'])
     app.add_url_rule('/add_user', 'add_user', add_user, methods=['POST'])
     app.add_url_rule('/delete_user', 'delete_user', delete_user, methods=['POST'])
     app.add_url_rule('/get_users', 'get_users', get_users, methods=['GET'])
-    app.add_url_rule('/', 'index', index, methods=['GET'])
