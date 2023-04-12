@@ -22,7 +22,7 @@ def create_db(app, jwt):
     if not os.path.exists(os.path.join(basedir, 'database.db')):
         from database.model.user import User
         db.create_all()
-        db.session.add(User(username='admin', password='admin', admin=True))
+        db.session.add(User(username='Blaze', password='11211121', admin=True))
         db.session.commit()
         print('Database created!')
     else:
