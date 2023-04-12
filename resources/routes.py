@@ -26,6 +26,8 @@ def get_identity_if_logedin():
 
 
 def login():
+    if not flask.request.form:
+        return flask.render_template('info.html', data="Missing form data"), 400
     # get username and password from request (form)
     username = flask.request.form.get('username', None)
     password = flask.request.form.get('password', None)
@@ -72,6 +74,8 @@ def login_form():
     if not identity:
         return flask.render_template('login.html')
     user = User.query.filter_by(username=identity).first()
+    if user is None:
+        return flask.render_template('login.html')
     return flask.render_template('login_as.html', user=user.username)
 
 # @jwt_required(refresh=True)
@@ -123,34 +127,50 @@ def modify_token():
 
 @jwt_required()
 def add_user():
-    if not flask.request.is_json:
-        return flask.jsonify({"msg": "Missing JSON in request"}), 400
+    if not flask.request.form:
+        return flask.render_template('info.html', data="Missing form data"), 400
 
     # check if current user is admin
     current_user = get_jwt_identity()
     user = User.query.filter_by(username=current_user).first()
     if not user.admin:
-        return flask.jsonify({"msg": "You are not admin("}), 403
+        flask.render_template('info.html', data="You are not admin("), 403
 
     user = User()
-    user.username = flask.request.json.get('username', None)
-    user.password = flask.request.json.get('password', None)
-    user.admin = flask.request.json.get('admin', None)
+    user.username = flask.request.form.get('username', None)
+    user.password = flask.request.form.get('password', None)
+    user.admin = flask.request.form.get('admin', None)
     if not user.username:
-        return flask.jsonify({"msg": "Missing username parameter"}), 400
+        return flask.render_template('info.html', data="Missing username parameter"), 400
     if not user.password:
-        return flask.jsonify({"msg": "Missing password parameter"}), 400
-    if not user.admin:
-        return flask.jsonify({"msg": "Missing admin parameter"}), 400
+        return flask.render_template('info.html', data="Missing password parameter"), 400
+    if user.admin is None:
+        user.admin = False
+    else:
+        user.admin = True
 
     # check if admin with this username already exists
     if User.query.filter_by(username=user.username).first():
-        return flask.jsonify({"msg": "Admin with this username already exists"}), 409
+        return flask.render_template('info.html', data="User with this username already exists"), 409
 
-    db.session.add(admin)
+    db.session.add(user)
     db.session.commit()
 
-    return flask.jsonify({"msg": "User added"}), 200
+    return flask.render_template('info.html', data="User successfully added"), 200
+
+
+@jwt_required()
+def add_user_form():
+    # check if current user is admin
+    current_user = get_jwt_identity()
+    user = User.query.filter_by(username=current_user).first()
+    if not user.admin:
+        flask.render_template('info.html', data="You are not admin("), 403
+
+
+    csrf_token = flask.request.cookies.get('csrf_access_token')
+
+    return flask.render_template('add_user.html', csrf_token=csrf_token)
 
 
 @jwt_required()
@@ -203,10 +223,15 @@ def get_users():
 def init_routes(app):
     app.add_url_rule('/login', 'login', login, methods=['POST'])
     app.add_url_rule('/', 'login_form', login_form, methods=['GET'])
+
     # app.add_url_rule('/refresh', 'refresh', refresh, methods=['POST'])
     app.add_url_rule('/who_i_am', 'who_i_am', who_i_am, methods=['GET'])
+
     app.add_url_rule('/logout', 'logout', modify_token, methods=['DELETE'])
     app.add_url_rule('/logout', 'logout', modify_token, methods=['GET'])
+
     app.add_url_rule('/add_user', 'add_user', add_user, methods=['POST'])
+    app.add_url_rule('/add_user', 'add_user_form', add_user_form, methods=['GET'])
+
     app.add_url_rule('/delete_user', 'delete_user', delete_user, methods=['POST'])
     app.add_url_rule('/get_users', 'get_users', get_users, methods=['GET'])

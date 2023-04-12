@@ -56,6 +56,21 @@ p{
     width: 310px;
     border-bottom: 2px solid #fff;
 }
+
+.checkbox{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 20px 0;
+}
+
+.checkbox label{
+    color: #fff;
+    font-size: 1em;
+    cursor: pointer;
+    padding-left: 5px;
+}
+
 .inputbox label{
     position: absolute;
     top: 50%;

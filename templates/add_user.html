@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="stylesheet" href="../static/auth.css">
+  <title>Add user</title>
+</head>
+<body>
+    <section>
+        <div class="form-box">
+            <div class="form-value">
+                <form action="/add_user" method="post">
+                    <h2>Add new user</h2>
+                    <input name="csrf_token" type="hidden" value="{{ csrf_token }}">
+                    <div class="inputbox">
+                        <ion-icon name="person-circle-outline"></ion-icon>
+                        <input name="username" required autofocus>
+                        <label for="">User</label>
+                    </div>
+                    <div class="inputbox">
+                        <ion-icon name="lock-closed-outline"></ion-icon>
+                        <input name="password"  type="password" required>
+                        <label for="">Password</label>
+                    </div>
+                    <div class="checkbox">
+                        <label for="">Admin</label>
+                        <input type="checkbox" name="admin" value="True">
+                    </div>
+                    <button name="login">Add</button>
+                </form>
+            </div>
+        </div>
+    </section>
+    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+</body>
+</html>

@@ -7,6 +7,7 @@ def init_cfg(app):
     app.config["JWT_SECRET_KEY"] = "super-secret-key))"  # Change this!
     app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(days=30)
     app.config['JWT_TOKEN_LOCATION'] = ['cookies']
+    app.config['JWT_CSRF_CHECK_FORM'] = True
     if not os.environ.get("OS") == "Windows_NT":
         app.config['JWT_COOKIE_DOMAIN'] = '.betablaze.fun'
     # app.config["JWT_REFRESH_TOKEN_EXPIRES"] = timedelta(days=30)
