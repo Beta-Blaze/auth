@@ -63,7 +63,7 @@ def login():
     set_access_cookies(resp, access_token)
 
     # redirect to home page
-    resp.headers['Location'] = flask.request.headers.get('Referer', '/')
+    resp.headers['Location'] = flask.request.headers.get('X-Original-URI', '/')
     resp.status_code = 302
     return resp
 
