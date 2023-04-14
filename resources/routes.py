@@ -63,10 +63,9 @@ def login():
     set_access_cookies(resp, access_token)
 
     # redirect to home page
-    resp.headers['Location'] = '/'
+    resp.headers['Location'] = flask.request.headers.get('Referer', '/')
     resp.status_code = 302
     return resp
-
 
 
 def login_form():
