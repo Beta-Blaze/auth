@@ -73,6 +73,8 @@ def login_form():
     identity = get_identity_if_logedin()
     # return flask.render_template("info.html", data=str(flask.request.headers).replace("5.45.78.208", "SERVER-IP")), 200
     redirect_url = flask.request.headers.get('Redirecthost', '') + flask.request.headers.get('Redirecturi', '/')
+    if redirect_url != '/':
+        redirect_url = "https://" + redirect_url
     if not identity:
         return flask.render_template('login.html', redirect_url=redirect_url)
     user = User.query.filter_by(username=identity).first()
