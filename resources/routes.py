@@ -171,7 +171,7 @@ def add_user_form():
     if not user.admin:
         flask.render_template('info.html', data="You are not admin("), 403
 
-
+    # get csrf token from cookies
     csrf_token = flask.request.cookies.get('csrf_access_token')
 
     return flask.render_template('add_user.html', csrf_token=csrf_token)
@@ -199,7 +199,7 @@ def delete_user():
     if not user:
         return flask.jsonify({"msg": "User with this id does not exists"}), 404
 
-    db.session.delete(admin)
+    db.session.delete(user)
     db.session.commit()
     return flask.jsonify({"msg": "User deleted"}), 200
 
@@ -238,4 +238,5 @@ def init_routes(app):
     app.add_url_rule('/add_user', 'add_user_form', add_user_form, methods=['GET'])
 
     app.add_url_rule('/delete_user', 'delete_user', delete_user, methods=['POST'])
+    app.add_url_rule('/delete_user', 'delete_user', delete_user, methods=['GET'])
     app.add_url_rule('/get_users', 'get_users', get_users, methods=['GET'])

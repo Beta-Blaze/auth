@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <link rel="stylesheet" href="../static/auth.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='auth.css') }}">
   <title>Add user</title>
 </head>
 <body>
     <section>
         <div class="form-box">
             <div class="form-value">
-                <form action="/add_user" method="post">
+                <form action="{{ url_for('add_user') }}" method="post">
                     <h2>Add new user</h2>
                     <input name="csrf_token" type="hidden" value="{{ csrf_token }}">
                     <div class="inputbox">
