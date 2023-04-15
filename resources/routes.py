@@ -64,19 +64,20 @@ def login():
 
     # redirect to home page
     print(resp.headers)
-    resp.headers['Location'] = flask.request.headers.get('X-Original-URI', '/')
+    resp.headers['Location'] = flask.request.form.get('redirect_url', '/')
     resp.status_code = 302
     return resp
 
 
 def login_form():
     identity = get_identity_if_logedin()
-    return flask.render_template("info.html", data=str(flask.request.headers).replace("5.45.78.208", "SERVER-IP")), 200
+    # return flask.render_template("info.html", data=str(flask.request.headers).replace("5.45.78.208", "SERVER-IP")), 200
+    redirect_url = flask.request.headers.get('Redirecthost', '') + flask.request.headers.get('Redirecturi', '/')
     if not identity:
-        return flask.render_template('login.html')
+        return flask.render_template('login.html', redirect_url=redirect_url)
     user = User.query.filter_by(username=identity).first()
     if user is None:
-        return flask.render_template('login.html')
+        return flask.render_template('login.html', redirect_url=redirect_url)
     return flask.render_template('login_as.html', user=user.username)
 
 # @jwt_required(refresh=True)
