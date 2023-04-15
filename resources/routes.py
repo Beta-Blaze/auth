@@ -263,5 +263,5 @@ def init_routes(app):
     app.add_url_rule('/add_user', 'add_user_form', add_user_form, methods=['GET'])
 
     app.add_url_rule('/delete_user', 'delete_user', delete_user, methods=['POST'])
-    app.add_url_rule('/delete_user_form', 'delete_user', delete_user, methods=['GET'])
+    app.add_url_rule('/delete_user', 'delete_user', delete_user_form, methods=['GET'])
     app.add_url_rule('/get_users', 'get_users', get_users, methods=['GET'])
