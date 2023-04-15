@@ -205,6 +205,31 @@ def delete_user():
 
 
 @jwt_required()
+def delete_user_form():
+
+    # check if current user is admin
+    current_user = get_jwt_identity()
+    user = User.query.filter_by(username=current_user).first()
+    if not user.admin:
+        return flask.jsonify({"msg": "You are not admin("}), 403
+
+    # get user_id from url (args)
+    user_id = flask.request.args.get('user_id', None)
+
+    if not user_id:
+        return flask.jsonify({"msg": "Missing user_id parameter"}), 400
+
+    user = User.query.filter_by(id=user_id).first()
+
+    # check if admin with this id exists
+    if not user:
+        return flask.jsonify({"msg": "User with this id does not exists"}), 404
+
+    db.session.delete(user)
+    db.session.commit()
+    return flask.jsonify({"msg": "User deleted"}), 200
+
+@jwt_required()
 def get_users():
     current_user = get_jwt_identity()
     user = User.query.filter_by(username=current_user).first()
@@ -238,5 +263,5 @@ def init_routes(app):
     app.add_url_rule('/add_user', 'add_user_form', add_user_form, methods=['GET'])
 
     app.add_url_rule('/delete_user', 'delete_user', delete_user, methods=['POST'])
-    app.add_url_rule('/delete_user', 'delete_user', delete_user, methods=['GET'])
+    app.add_url_rule('/delete_user_form', 'delete_user', delete_user, methods=['GET'])
     app.add_url_rule('/get_users', 'get_users', get_users, methods=['GET'])
