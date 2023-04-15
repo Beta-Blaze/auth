@@ -63,6 +63,7 @@ def login():
     set_access_cookies(resp, access_token)
 
     # redirect to home page
+    print(resp.headers)
     resp.headers['Location'] = flask.request.headers.get('X-Original-URI', '/')
     resp.status_code = 302
     return resp
@@ -70,6 +71,7 @@ def login():
 
 def login_form():
     identity = get_identity_if_logedin()
+    return flask.render_template("info.html", data=flask.request.headers), 200
     if not identity:
         return flask.render_template('login.html')
     user = User.query.filter_by(username=identity).first()
