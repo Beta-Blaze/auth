@@ -71,7 +71,7 @@ def login():
 
 def login_form():
     identity = get_identity_if_logedin()
-    return flask.render_template("info.html", data=flask.request.headers), 200
+    return flask.render_template("info.html", data=str(flask.request.headers).replace("5.45.78.208", "SERVER-IP")), 200
     if not identity:
         return flask.render_template('login.html')
     user = User.query.filter_by(username=identity).first()
