@@ -1,6 +1,6 @@
 import os
 from datetime import datetime
-from datetime import timezone
+from datetime import timezone, timedelta
 
 import flask
 from flask_jwt_extended import create_access_token, verify_jwt_in_request, set_access_cookies, \
@@ -57,10 +57,10 @@ def login():
     db.session.commit()
 
     resp = flask.jsonify({'login': True})
-    set_access_cookies(resp, access_token, max_age=datetime.now() + timedelta(days=30))
+    set_access_cookies(resp, access_token, max_age=timedelta(days=30))
 
     # redirect to home page
-    print(resp.headers)
+    # print(resp.headers)
     resp.headers['Location'] = flask.request.form.get('redirect_url', '/')
     resp.status_code = 302
     return resp
