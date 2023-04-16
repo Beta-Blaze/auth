@@ -1,4 +1,3 @@
-import base64
 import os
 from datetime import datetime
 from datetime import timezone
@@ -13,8 +12,6 @@ from flask_jwt_extended import decode_token
 from database.model.token import TokenBlocklist
 from database.model.user import User
 from database.db import db
-
-import re
 
 def get_identity_if_logedin():
     try:
@@ -240,6 +237,9 @@ def get_users():
     return flask.jsonify([user.serialize() for user in users]), 200
 
 
+def favicon():
+    return flask.send_from_directory("static", "favicon.ico")
+
 
 # def index():
 #     identity = get_identity_if_logedin()
@@ -265,3 +265,5 @@ def init_routes(app):
     app.add_url_rule('/delete_user', 'delete_user', delete_user, methods=['POST'])
     app.add_url_rule('/delete_user', 'delete_user_form', delete_user_form, methods=['GET'])
     app.add_url_rule('/get_users', 'get_users', get_users, methods=['GET'])
+
+    app.add_url_rule('/favicon.ico', 'favicon', favicon, methods=['GET'])
