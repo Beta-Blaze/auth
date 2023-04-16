@@ -57,7 +57,7 @@ def login():
     db.session.commit()
 
     resp = flask.jsonify({'login': True})
-    set_access_cookies(resp, access_token)
+    set_access_cookies(resp, access_token, max_age=datetime.now() + timedelta(days=30))
 
     # redirect to home page
     print(resp.headers)
