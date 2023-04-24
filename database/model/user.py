@@ -7,8 +7,9 @@ class User(db.Model):
     username = db.Column(db.String(15), unique=True, nullable=False)
     password = db.Column(db.String(80), nullable=False)
 
-    refresh_token = db.Column(db.String(100), nullable=True, default='')
-    access_token = db.Column(db.String(100), nullable=True, default='')
+    # refresh_token = db.Column(db.String(100), nullable=True, default='')
+    # access_token = db.Column(db.String(100), nullable=True, default='')
+    tokens = db.relationship('TokenList', backref='user', lazy=False)
 
     admin = db.Column(db.Boolean, nullable=False, default=False)
 

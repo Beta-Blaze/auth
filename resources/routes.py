@@ -9,9 +9,10 @@ from flask_jwt_extended import get_jwt_identity
 from flask_jwt_extended import jwt_required
 from flask_jwt_extended import decode_token
 
-from database.model.token import TokenBlocklist
+from database.model.token import TokenBlocklist, TokenList
 from database.model.user import User
 from database.db import db
+
 
 def get_identity_if_logedin():
     try:
@@ -37,8 +38,8 @@ def login():
     if user is None or user.password != password:
         return flask.render_template('info.html', data="Bad username or password"), 401
 
-    # blocklist all tokens from a user when he logs in
-    token = user.access_token
+    # blocklist token from a user when he logs in
+    token = flask.request.cookies.get("access_token_cookie", None)
     if token is not None and token:
         token = decode_token(token, csrf_value=None, allow_expired=True)
         jti = token['jti']
@@ -52,8 +53,10 @@ def login():
     access_token = create_access_token(identity=username)
     # refresh_token = create_refresh_token(identity=username)
 
-    user.access_token = access_token
+    # user.access_token = access_token
     # user.refresh_token = refresh_token
+
+    user.tokens.append(TokenList(token=access_token, type='access'))
     db.session.commit()
 
     resp = flask.jsonify({'login': True})
@@ -114,8 +117,7 @@ def who_i_am():
 def modify_token():
     identity = get_jwt_identity()
 
-    user = User.query.filter_by(username=identity).first()
-    token = user.access_token
+    token = flask.request.cookies.get("access_token_cookie", None)
     token = decode_token(token, csrf_value=None, allow_expired=True)
     jti = token["jti"]
     ttype = token["type"]
