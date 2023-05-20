@@ -22,7 +22,7 @@ jwt = JWTManager(app)
 CORS(app)
 cors = CORS(app, resource={
     r"/*": {
-        "origins": ".betablaze.fun"
+        "origins": "*"
     }
 })
 
